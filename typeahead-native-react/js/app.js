@@ -16,7 +16,7 @@ var icons = [
     tweets: '92978',
     following: '200',
     followers: '18',
-    text: 'В четчерг, четвертого числа...'
+    text: 'В friday, пятого числа...'
     
   },
   {
@@ -25,7 +25,7 @@ var icons = [
     tweets: '42978',
     following: '4200',
     followers: '8',
-    text: 'В четчерг, четвертого числа...'
+    text: 'В monday, шестого числа...'
     
   }
 ];
@@ -35,7 +35,6 @@ window.ee = new EventEmitter();
 var Item = React.createClass({
 
   render: function() {
-  // debugger;
     var name = this.props.data.name,
         nickname = this.props.data.nickname,
         tweets = this.props.data.tweets,
@@ -71,20 +70,11 @@ var ItemsList = React.createClass({
   },
   render: function() {
     var data = this.props.data,
-        tpl;
+        itemsArray, tpl;
 
     if (data.length > 0) {
-      tpl = data.map(function(item, index) {
+      itemsArray = data.map(function(item, index) {
         return (
-          // <div className="items-list-block" key={index}>
-          //   <div className="items-list-wrapper">
-          //     <div className="items-list-inner">
-          //       <div className="items-list" element-id="items-list">
-          //         <Item data={item} />
-          //       </div>
-          //     </div>
-          //   </div>
-          // </div>
           <div className="item-wrapper" key={index}>
             <Item data={item} />
           </div>
@@ -95,7 +85,7 @@ var ItemsList = React.createClass({
               <div className="items-list-wrapper">
                 <div className="items-list-inner">
                   <div className="items-list" element-id="items-list">
-                    {tpl}
+                    {itemsArray}
                   </div>
                 </div>
               </div>
@@ -158,11 +148,13 @@ var App = React.createClass({
   searchIcons: function(query) {
     var result = [];
 
-    icons.forEach(function(item) {
-      if (item.name.indexOf(query) > -1) {
-        result.push(item);
-      }
-    })
+    if (query != "") {
+      icons.forEach(function(item) {
+        if (item.name.indexOf(query) > -1) {
+          result.push(item);
+        }
+      })
+    }
     this.setState({items: result});
   },
   componentWillUnmount: function() {
@@ -179,7 +171,7 @@ var App = React.createClass({
         </div>
         <div className="notification-text-wrapper">
           <div className="notification-text-inner">
-            <div className="notification-text" element-id="notification-text">
+            <div className="notification-text">
               test
             </div>
           </div>
