@@ -20,177 +20,91 @@ var my_news = [
 
 window.ee = new EventEmitter();
 
-var Article = React.createClass({
-  propTypes: {
-    data: React.PropTypes.shape({
-      author: React.PropTypes.string.isRequired,
-      text: React.PropTypes.string.isRequired,
-      bigText: React.PropTypes.string.isRequired
-    })
-  },
-  getInitialState: function() {
-    return {
-      visible: false
-    };
-  },
-  readmoreClick: function(e) {
-    e.preventDefault();
-    this.setState({visible: true});
-  },
-  render: function() {
-    var author = this.props.data.author,
-        text = this.props.data.text,
-        bigText = this.props.data.bigText,
-        visible = this.state.visible;
 
-    return (
-      <div className='article'>
-        <p className='news__author'>{author}:</p>
-        <p className='news__text'>{text}</p>
-        <a href="#"
-          onClick={this.readmoreClick}
-          className={'news__readmore ' + (visible ? 'none': '')}>
-          Подробнее
-        </a>
-        <p className={'news__big-text ' + (visible ? '': 'none')}>{bigText}</p>
-      </div>
-    )
-  }
-});
-
-var News = React.createClass({
-  propTypes: {
-    data: React.PropTypes.array.isRequired
-  },
-  getInitialState: function() {
-    return {
-      counter: 0
-    }
-  },
-  render: function() {
-    var data = this.props.data;
-    var newsTemplate;
-
-    if (data.length > 0) {
-      newsTemplate = data.map(function(item, index) {
-        return (
-          <div key={index}>
-            <Article data={item} />
-          </div>
-        )
-      })
-    } else {
-      newsTemplate = <p>К сожалению новостей нет</p>
-    }
-
-    return (
-      <div className='news'>
-        {newsTemplate}
-        <strong
-          className={'news__count ' + (data.length > 0 ? '':'none') }>Всего новостей: {data.length}</strong>
-      </div>
-    );
-  }
-});
-
-var Add = React.createClass({
-  getInitialState: function() {
-    return {
-      agreeNotChecked: true,
-      authorIsEmpty: true,
-      textIsEmpty: true
-    };
-  },
-  componentDidMount: function() {
-    ReactDOM.findDOMNode(this.refs.author).focus();
-  },
-  onBtnClickHandler: function(e) {
-    e.preventDefault();
-    var textEl = ReactDOM.findDOMNode(this.refs.text);
-
-    var author = ReactDOM.findDOMNode(this.refs.author).value;
-    var text = textEl.value;
-
-    var item = [{
-      author: author,
-      text: text,
-      bigText: '...'
-    }];
-
-    window.ee.emit('News.add', item);
-
-    textEl.value = '';
-    this.setState({textIsEmpty: true});
-  },
-  onCheckRuleClick: function(e) {
-    this.setState({agreeNotChecked: !this.state.agreeNotChecked});
-  },
-  onFieldChange: function(fieldName, e) {
-    if (e.target.value.trim().length > 0) {
-      this.setState({[''+fieldName]:false})
-    } else {
-      this.setState({[''+fieldName]:true})
-    }
-  },
-  render: function() {
-    var agreeNotChecked = this.state.agreeNotChecked,
-        authorIsEmpty = this.state.authorIsEmpty,
-        textIsEmpty = this.state.textIsEmpty;
-    return (
-      <form className='add cf'>
-        <input
-          type='text'
-          className='add__author'
-          onChange={this.onFieldChange.bind(this, 'authorIsEmpty')}
-          placeholder='Ваше имя'
-          ref='author'
-        />
-        <textarea
-          className='add__text'
-          onChange={this.onFieldChange.bind(this, 'textIsEmpty')}
-          placeholder='Текст новости'
-          ref='text'
-        ></textarea>
-        <label className='add__checkrule'>
-          <input type='checkbox' ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
-        </label>
-
-        <button
-          className='add__btn'
-          onClick={this.onBtnClickHandler}
-          ref='alert_button'
-          disabled={agreeNotChecked || authorIsEmpty || textIsEmpty}
-          >
-          Опубликовать новость
-        </button>
-      </form>
-    );
-  }
-});
 
 var App = React.createClass({
-  getInitialState: function() {
-    return {
-      news: my_news
-    };
-  },
-  componentDidMount: function() {
-    var self = this;
-    window.ee.addListener('News.add', function(item) {
-      var nextNews = item.concat(self.state.news);
-      self.setState({news: nextNews});
-    });
-  },
-  componentWillUnmount: function() {
-    window.ee.removeListener('News.add');
-  },
   render: function() {
-    console.log('render');
     return (
-      <div className='app'>
-        <Add />
-        <h3>Новости</h3>
-        <News data={this.state.news} />
+      <div className="search-block-wrapper" >
+        <div className="search-block-wrapper">
+          <div className="search-block-inner">
+            <div className="search-block" element-id="search-block" view-status="loading">
+              <input className="search-input"/>
+              <div className="loader-wrapper">
+                <div className="loader">Loading</div>
+              </div>
+            </div>
+            <div className="items-list-block">
+              <div className="items-list-wrapper">
+                <div className="items-list-inner">
+                  <div className="items-list" element-id="items-list">
+                    <div className="item-wrapper">
+                      <div className="item clearfix">
+                        <div className="left-column pull-left">
+                          <div className="profile-image"></div>
+                        </div>
+                        <div className="right-column pull-left">
+                          <div className="top-block"><span className="name">User blue icon</span><span className="identification main-grey-color">@user_blue</span></div>
+                          <div className="center-block"><span className="info">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a lacinia bibendum! Neque morbi nisi mus convallis lectus: Vulputate justo etiam eros; Molestie proin porta auctor montes magna pellentesque?</span></div>
+                          <div className="bottom-block">
+                            <div className="social-activity">
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="item-wrapper">
+                      <div className="item clearfix">
+                        <div className="left-column pull-left">
+                          <div className="profile-image"></div>
+                        </div>
+                        <div className="right-column pull-left">
+                          <div className="top-block"><span className="name">User blue icon</span><span className="identification main-grey-color">@user_blue</span></div>
+                          <div className="center-block"><span className="info">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a lacinia bibendum! Neque morbi nisi mus convallis lectus: Vulputate justo etiam eros; Molestie proin porta auctor montes magna pellentesque?</span></div>
+                          <div className="bottom-block">
+                            <div className="social-activity">
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="item-wrapper">
+                      <div className="item clearfix">
+                        <div className="left-column pull-left">
+                          <div className="profile-image"></div>
+                        </div>
+                        <div className="right-column pull-left">
+                          <div className="top-block"><span className="name">User blue icon</span><span className="identification main-grey-color">@user_blue</span></div>
+                          <div className="center-block"><span className="info">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a lacinia bibendum! Neque morbi nisi mus convallis lectus: Vulputate justo etiam eros; Molestie proin porta auctor montes magna pellentesque?</span></div>
+                          <div className="bottom-block">
+                            <div className="social-activity">
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
+                              <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="notification-text-wrapper">
+          <div className="notification-text-inner">
+            <div className="notification-text" element-id="notification-text">
+              test
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
