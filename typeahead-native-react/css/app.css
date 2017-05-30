@@ -9828,4 +9828,5 @@ body {
 }
 .items-list-wrapper {
   position: absolute;
+  width: 100%;
 }

@@ -33,41 +33,83 @@ var icons = [
 window.ee = new EventEmitter();
 
 var Item = React.createClass({
+
   render: function() {
-    <div className="item-wrapper">
-      <div className="item clearfix">
-        <div className="left-column pull-left">
-          <div className="profile-image"></div>
-        </div>
-        <div className="right-column pull-left">
-          <div className="top-block"><span className="name">User blue icon</span><span className="identification main-grey-color">@user_blue</span></div>
-          <div className="center-block"><span className="info">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a lacinia bibendum! Neque morbi nisi mus convallis lectus: Vulputate justo etiam eros; Molestie proin porta auctor montes magna pellentesque?</span></div>
-          <div className="bottom-block">
-            <div className="social-activity">
-              <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
-              <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
-              <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+  // debugger;
+    var name = this.props.data.name,
+        nickname = this.props.data.nickname,
+        tweets = this.props.data.tweets,
+        following = this.props.data.following,
+        followers = this.props.data.followers,
+        text = this.props.data.text;
+
+    return(
+      
+        <div className="item clearfix">
+          <div className="left-column pull-left">
+            <div className="profile-image"></div>
+          </div>
+          <div className="right-column pull-left">
+            <div className="top-block"><span className="name">{name}</span><span className="identification main-grey-color">{nickname}</span></div>
+            <div className="center-block"><span className="info">{text}</span></div>
+            <div className="bottom-block">
+              <div className="social-activity">
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    )
   }
 })
 
 var ItemsList = React.createClass({
+  propTypes: {
+    data: React.PropTypes.array.isRequired
+  },
   render: function() {
-    return (
-      <div className="items-list-block">
-        <div className="items-list-wrapper">
-          <div className="items-list-inner">
-            <div className="items-list" element-id="items-list">
-                            
-            </div>
+    var data = this.props.data,
+        tpl;
+
+    if (data.length > 0) {
+      tpl = data.map(function(item, index) {
+        return (
+          // <div className="items-list-block" key={index}>
+          //   <div className="items-list-wrapper">
+          //     <div className="items-list-inner">
+          //       <div className="items-list" element-id="items-list">
+          //         <Item data={item} />
+          //       </div>
+          //     </div>
+          //   </div>
+          // </div>
+          <div className="item-wrapper" key={index}>
+            <Item data={item} />
           </div>
-        </div>
+        )
+      })
+
+      tpl = <div className="items-list-block">
+              <div className="items-list-wrapper">
+                <div className="items-list-inner">
+                  <div className="items-list" element-id="items-list">
+                    {tpl}
+                  </div>
+                </div>
+              </div>
+            </div>
+    } else {
+      tpl = "";
+    }
+
+    return (
+      <div>
+        {tpl}        
       </div>
-    )
+    );
+    
   }
 })
 
@@ -84,9 +126,7 @@ var SearchBlock = React.createClass({
     var value = e.target.value.trim();
 
     this.setState({query: value});
-  },
-  componentWillUpdate: function(nextProps, nextState) {
-    window.ee.emit('query:updated', {query: nextState.query});
+    window.ee.emit('query:updated', {query: value});
   },
   render: function() {
     return (
@@ -123,8 +163,7 @@ var App = React.createClass({
         result.push(item);
       }
     })
-
-    // set state
+    this.setState({items: result});
   },
   componentWillUnmount: function() {
     window.ee.removeListener('query:updated');
@@ -135,7 +174,7 @@ var App = React.createClass({
         <div className="search-block-wrapper">
           <div className="search-block-inner">
             <SearchBlock />
-            <ItemsList />
+            <ItemsList data={this.state.items}/>
           </div>
         </div>
         <div className="notification-text-wrapper">
