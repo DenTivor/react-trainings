@@ -9741,6 +9741,11 @@ body {
   margin: 0 auto;
   background: #fff;
   border-radius: 10px;
+  overflow: hidden;
+}
+.items-list .item:hover {
+  background: #efefef;
+  cursor: pointer;
 }
 .items-list .left-column {
   width: 15%;
@@ -9830,9 +9835,9 @@ body {
   position: absolute;
   width: 100%;
 }
-.search-block-inner.active .items-list {
-  display: block;
-}
 .search-block-inner.passive .items-list {
   display: none;
+}
+.search-block-inner.active .items-list {
+  display: block;
 }
