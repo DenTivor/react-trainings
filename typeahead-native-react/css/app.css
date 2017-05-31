@@ -9830,3 +9830,9 @@ body {
   position: absolute;
   width: 100%;
 }
+.search-block-inner.active .items-list {
+  display: block;
+}
+.search-block-inner.passive .items-list {
+  display: none;
+}

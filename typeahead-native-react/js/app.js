@@ -20,6 +20,15 @@ var icons = [
     
   },
   {
+    name: 'User other red icon',
+    nickname: '@user_other_red',
+    tweets: '9297823',
+    following: '290',
+    followers: '180',
+    text: 'В tuesday, пятого числа...'
+    
+  },
+  {
     name: 'User green icon',
     nickname: '@user_green',
     tweets: '42978',
@@ -53,9 +62,9 @@ var Item = React.createClass({
             <div className="center-block"><span className="info">{text}</span></div>
             <div className="bottom-block">
               <div className="social-activity">
-                <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">42978</span></div>
-                <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">4200</span></div>
-                <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">8</span></div>
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Tweets:</span><span className="social-counter">{tweets}</span></div>
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Following:</span><span className="social-counter">{following}</span></div>
+                <div className="social-parameters"><span className="social-param-name main-grey-color">Followers:</span><span className="social-counter">{followers}</span></div>
               </div>
             </div>
           </div>
@@ -106,11 +115,9 @@ var ItemsList = React.createClass({
 var SearchBlock = React.createClass({
   getInitialState: function() {
     return {
-      query: ''
+      query: '',
+      isFocused: true
     };
-  },
-  componentDidMount: function() {
-    ReactDOM.findDOMNode(this.refs.search).focus();
   },
   onFieldChangeHandler: function(e) {
     var value = e.target.value.trim();
@@ -118,11 +125,20 @@ var SearchBlock = React.createClass({
     this.setState({query: value});
     window.ee.emit('query:updated', {query: value});
   },
+  onFocus: function() {
+    window.ee.emit('viewStatus:update', {status: 'active'});
+  },
+  onBlur: function() {
+    window.ee.emit('viewStatus:update', {status: 'passive'});
+  },
   render: function() {
     return (
       <div className="search-block" element-id="search-block" view-status="loading">
         <input className="search-input"
           onChange={this.onFieldChangeHandler}
+          onFocus={this.onFocus}  
+          onBlur={this.onBlur}        
+          autoFocus={false}
           ref="search"
         />
         <div className="loader-wrapper">
@@ -136,7 +152,8 @@ var SearchBlock = React.createClass({
 var App = React.createClass({
   getInitialState: function() {
     return {
-      items: []
+      items: [],
+      viewStatus: 'passive'
     };
   },
   componentDidMount: function() {
@@ -144,27 +161,32 @@ var App = React.createClass({
     window.ee.addListener('query:updated', function(query) {
        self.searchIcons(query.query);
     });
+    window.ee.addListener('viewStatus:update', function(status) {
+       self.updateStatus(status.status);
+    });
+  },
+  updateStatus: function(status) {
+    this.setState({viewStatus: status});
   },
   searchIcons: function(query) {
     var result = [];
 
-    if (query != "") {
-      icons.forEach(function(item) {
-        if (item.name.indexOf(query) > -1) {
-          result.push(item);
-        }
-      })
-    }
+    icons.forEach(function(item) {
+      if (item.name.indexOf(query) > -1) {
+        result.push(item);
+      }
+    })
     this.setState({items: result});
   },
   componentWillUnmount: function() {
     window.ee.removeListener('query:updated');
+    window.ee.removeListener('viewStatus:update');
   },
   render: function() {
     return (
       <div className="search-block-wrapper" >
         <div className="search-block-wrapper">
-          <div className="search-block-inner">
+          <div className={'search-block-inner ' + (this.state.viewStatus) }>
             <SearchBlock />
             <ItemsList data={this.state.items}/>
           </div>
